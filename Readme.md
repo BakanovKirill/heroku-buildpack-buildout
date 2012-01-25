@@ -12,7 +12,7 @@ Example usage:
     $ ls
     Procfile  bootstrap.py  buildout.cfg
 
-    $ heroku create --stack cedar --buildpack git@github.com:kennethrietz/heroku-buildpack-buildout.git
+    $ heroku create --stack cedar --buildpack git@github.com:kennethreitz/heroku-buildpack-buildout.git
 
     $ git push heroku master
     something.
