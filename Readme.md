@@ -10,28 +10,14 @@ Usage
 Example usage:
 
     $ ls
-    Procfile  requirements.txt  web.py
+    Procfile  bootstrap.py  buildout.cfg
 
-    $ heroku create --stack cedar --buildpack git@github.com:heroku/heroku-buildpack-python.git
+    $ heroku create --stack cedar --buildpack git@github.com:kennethrietz/heroku-buildpack-buildout.git
 
     $ git push heroku master
-    ...
-    -----> Heroku receiving push
-    -----> Fetching custom build pack... done
-    -----> Python app detected
-    -----> Preparing virtualenv version 1.6.4
-           New python executable in ./bin/python
-           Installing setuptools............done.
-           Installing pip...............done.
-    -----> Installing dependencies using pip version 1.0.2
-           Downloading/unpacking Flask==0.7.2 (from -r requirements.txt (line 1))
-           Downloading/unpacking Werkzeug>=0.6.1 (from Flask==0.7.2->-r requirements.txt (line 1))
-           Downloading/unpacking Jinja2>=2.4 (from Flask==0.7.2->-r requirements.txt (line 1))
-           Installing collected packages: Flask, Werkzeug, Jinja2
-           Successfully installed Flask Werkzeug Jinja2
-           Cleaning up...
+    something.
 
-The buildpack will detect your app as Python if it has the file `requirements.txt` in the root. It will detect your app as Python/Django if there is an additional `settings.py` in a project subdirectory.
+The buildpack will detect your app as Buildout if it has the file `buildout.cfg` in the root. It will detect your app as Python/Django if there is an additional `settings.py` in a project subdirectory.
 
 It will use virtualenv and pip to install your dependencies, vendoring a copy of the Python runtime into your slug.  The `bin/`, `include/` and `lib/` directories will be cached between builds to allow for faster pip install time.
 
