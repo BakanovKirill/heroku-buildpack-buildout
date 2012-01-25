@@ -21,10 +21,6 @@ indent() {
 
 cd $BUILD_DIR
 
-# Copy artifacts out of cache.
-mkdir -p $CACHE_DIR
-cp -R $CACHE_DIR/* . &> /dev/null || true
-
 # Create virtualenv. Rebuild if corrupt.
 echo "-----> Running bootstrap.py"
 python bootstrap.py -d
@@ -33,8 +29,4 @@ python bootstrap.py -d
 echo "-----> Running buildout"
 bin/buildout
 
-
-# Store new artifacts in cache.
-rm -rf $CACHE_DIR/*
-cp -R * $CACHE_DIR/
 
