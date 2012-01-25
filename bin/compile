@@ -25,7 +25,7 @@ cp -R $CACHE_DIR/* . &> /dev/null || true
 
 # Create virtualenv. Rebuild if corrupt.
 echo "-----> Running bootstrap.py"
-python bin/buildout
+python bootstrap.py -d
 
 # Activate the virtualenv.
 echo "-----> Running buildout"
