@@ -12,100 +12,27 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 
 NAME=$($BIN_DIR/detect $BUILD_DIR)
-PIP_DOWNLOAD_CACHE=${PIP_DOWNLOAD_CACHE:-$CACHE_DIR/pip_downloads}
-VIRTUALENV_DIRS="bin include lib"
-VENDORED_MEMCACHED="http://cl.ly/0a191R3K160t1w1P0N25/vendor-libmemcached.tar.gz"
 
-export PIP_DOWNLOAD_CACHE
 
 indent() {
   RE="s/^/       /"
   [ $(uname) == "Darwin" ] && sed -l "$RE" || sed -u "$RE"
 }
 
-function virtualenv (){
-  python "$ROOT_DIR/src/virtualenv-1.7/virtualenv.py" "$@"
-}
-
-cd $BUILD_DIR
-
-# Reject a non-packaged Django app.
-if [ "$NAME" = "Python" ]; then
-  [ -f manage.py ] && [ -f settings.py ] && { echo " !     Django app must be in a package subdirectory"; exit 1; }
-fi
-
-# Warn a checked-in virtualenv.
-if [ -d "lib" ] || [ -d "bin" ]; then
-  echo " !     You have a virtualenv checked in. You should ignore the appropriate paths in your repo. See http://devcenter.heroku.com/articles/gitignore for more info.";
-fi
-
-# Reject a conflicting checked-in virtualenv.
-if [ -f "lib/python2.7" ]; then
-  echo " !     Checked-in virtualenv conflict."
-  exit 1;
-fi
-
-# Copy artifacts out of cache if exists.
+# Copy artifacts out of cache.
 mkdir -p $CACHE_DIR
-for dir in $VIRTUALENV_DIRS; do
-  cp -R $CACHE_DIR/$dir . &> /dev/null || true
-done
+cp -R $CACHE_DIR/* . &> /dev/null || true
 
 # Create virtualenv. Rebuild if corrupt.
-set +e
-echo "-----> Preparing virtualenv version $(virtualenv --version)"
-
-# Try to create the virtualenv.
-OUT=$(virtualenv --distribute --never-download  --prompt=venv . 2>&1)
-
-# If there's an error, purge and recreate.
-[ $? -ne 0 ] && {
-  echo " !     Virtualenv corrupt, rebuilding."
-  for dir in $VIRTUALENV_DIRS; do
-    rm -fr $dir &> /dev/null || true
-  done
-  OUT=$(virtualenv --distribute --never-download  --prompt=venv . )
-}
-echo "$OUT" | indent
-
-set -e
-
-# Create set-aside .heroku folder.
-mkdir -p .heroku
-
-# Pylibmc support.
-source $BIN_DIR/steps/pylibmc
+echo "-----> Running bootstrap.py"
+python bin/buildout
 
 # Activate the virtualenv.
-echo "-----> Activating virtualenv"
-source bin/activate
+echo "-----> Running buildout"
+bin/buildout
 
-# Install mercurial, if needed.
-if (grep -Fiq "hg+" requirements.txt) then
-  pip install --use-mirrors mercurial | indent
-fi
-
-# Install dependencies.
-echo "-----> Installing dependencies using pip version $(bin/pip --version | awk '{print $2}')"
-pip install --use-mirrors -r requirements.txt | indent
-
-# Django support.
-if [ "$NAME" = "Python/Django" ]; then
-  source $BIN_DIR/steps/django
-fi
-
-# Make virtualenv relocatable.
-set +e
-OUT=$(virtualenv --relocatable .)
-[ $? -ne 0 ] && {
-  echo " !     Error making virtualenv relocatable"
-  echo "$OUT" | indent
-  exit 1
-}
-set -e
 
 # Store new artifacts in cache.
-for dir in $VIRTUALENV_DIRS; do
-  rm -rf $CACHE_DIR/$dir
-  cp -R $dir $CACHE_DIR/
-done
+rm -rf $CACHE_DIR/*
+cp -R * $CACHE_DIR/
+
