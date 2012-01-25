@@ -1,7 +1,7 @@
-Heroku buildpack: Python
-========================
+Heroku buildpack: Buildout
+==========================
 
-This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for Python apps.
+This is a completely unofficial [Heroku buildpack](http://devcenter.heroku.com/articles/buildpack) for Python apps that need Buildout, for some reason.
 It uses [virtualenv](http://www.virtualenv.org/) and [pip](http://www.pip-installer.org/).
 
 Usage
