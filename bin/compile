@@ -19,6 +19,8 @@ indent() {
   [ $(uname) == "Darwin" ] && sed -l "$RE" || sed -u "$RE"
 }
 
+cd $BUILD_DIR
+
 # Copy artifacts out of cache.
 mkdir -p $CACHE_DIR
 cp -R $CACHE_DIR/* . &> /dev/null || true
