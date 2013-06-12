@@ -23,7 +23,7 @@ cd $BUILD_DIR
 
 # Create virtualenv. Rebuild if corrupt.
 echo "-----> Running bootstrap.py"
-python bootstrap.py -d
+python bootstrap.py
 
 # Activate the virtualenv.
 echo "-----> Running buildout"
